@@ -12,9 +12,9 @@ public class FormPendaftaranKelas extends JFrame {
     private JButton btnSimpan, btnDelete, btnReset;
     
     // Database connection details
-    private static final String URL = "jdbc:postgresql://localhost:5433/pbo_gym";
+    private static final String URL = "jdbc:postgresql://localhost:5432/pbo_gym";
     private static final String USER = "postgres";
-    private static final String PASSWORD = "audyna11"; // Ganti dengan password Anda
+    private static final String PASSWORD = "waely1234"; // Ganti dengan password Anda
     
     private Connection connection;
 

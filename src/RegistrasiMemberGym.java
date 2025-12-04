@@ -1,3 +1,4 @@
+// package src;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.event.*;
@@ -30,49 +31,62 @@ public class RegistrasiMemberGym extends JFrame {
         lblNama.setBounds(20, 20, 120, 25);
         add(lblNama);
         txtNama = new JTextField();
-        txtNama.setBounds(150, 20, 200, 25);
+        txtNama.setBounds(150, 20, 350, 25);
         add(txtNama);
 
         JLabel lblUsia = new JLabel("Usia:");
         lblUsia.setBounds(20, 60, 120, 25);
         add(lblUsia);
         txtUsia = new JTextField();
-        txtUsia.setBounds(150, 60, 200, 25);
+        txtUsia.setBounds(150, 60, 350, 25);
         add(txtUsia);
 
         JLabel lblJK = new JLabel("Jenis Kelamin:");
         lblJK.setBounds(20, 100, 120, 25);
         add(lblJK);
         cbJK = new JComboBox<>(new String[]{"L", "P"});
-        cbJK.setBounds(150, 100, 200, 25);
+        cbJK.setBounds(150, 100, 350, 25);
         add(cbJK);
 
         JLabel lblTelepon = new JLabel("No Telepon:");
         lblTelepon.setBounds(20, 140, 120, 25);
         add(lblTelepon);
         txtTelepon = new JTextField();
-        txtTelepon.setBounds(150, 140, 200, 25);
+        txtTelepon.setBounds(150, 140, 350, 25);
         add(txtTelepon);
+
+        // Batasi input nomor telepon
+        txtTelepon.addKeyListener(new KeyAdapter() {
+            public void keyTyped(KeyEvent e) {
+                char c = e.getKeyChar();
+                if (!Character.isDigit(c)) {
+                    e.consume(); 
+                }
+                if (txtTelepon.getText().length() >= 13) {
+                    e.consume(); 
+                }
+            }
+        });
 
         JLabel lblAlamat = new JLabel("Alamat:");
         lblAlamat.setBounds(20, 180, 120, 25);
         add(lblAlamat);
         txtAlamat = new JTextArea();
         JScrollPane spAlamat = new JScrollPane(txtAlamat);
-        spAlamat.setBounds(150, 180, 200, 70);
+        spAlamat.setBounds(150, 180, 350, 70);
         add(spAlamat);
 
         // Tombol
         JButton btnSimpan = new JButton("Simpan");
-        btnSimpan.setBounds(20, 270, 90, 30);
+        btnSimpan.setBounds(150, 280, 100, 35);
         add(btnSimpan);
 
         JButton btnHapus = new JButton("Hapus");
-        btnHapus.setBounds(120, 270, 90, 30);
+        btnHapus.setBounds(270, 280, 100, 35);
         add(btnHapus);
 
         JButton btnReset = new JButton("Reset");
-        btnReset.setBounds(220, 270, 90, 30);
+        btnReset.setBounds(390, 280, 100, 35);
         add(btnReset);
 
         // Tabel
@@ -81,19 +95,15 @@ public class RegistrasiMemberGym extends JFrame {
         }, 0);
         table = new JTable(model);
         JScrollPane spTable = new JScrollPane(table);
-        spTable.setBounds(370, 20, 350, 400);
+        spTable.setBounds(20, 320, 700, 150);
         add(spTable);
 
         // Load data awal
         loadData();
 
-        // Event tombol SIMPAN
+        // Event tombol
         btnSimpan.addActionListener(e -> simpanData());
-
-        // Event tombol HAPUS
         btnHapus.addActionListener(e -> hapusData());
-
-        // Event tombol RESET
         btnReset.addActionListener(e -> resetForm());
 
         setVisible(true);
@@ -137,9 +147,16 @@ public class RegistrasiMemberGym extends JFrame {
     // Simpan data
     void simpanData() {
         try {
+            // Validasi form
             if (txtNama.getText().isEmpty() || txtUsia.getText().isEmpty() ||
                     txtTelepon.getText().isEmpty() || txtAlamat.getText().isEmpty()) {
                 JOptionPane.showMessageDialog(null, "Semua field wajib diisi!");
+                return;
+            }
+
+            // Validasi nomor telepon
+            if (txtTelepon.getText().length() < 10 || txtTelepon.getText().length() > 13) {
+                JOptionPane.showMessageDialog(null, "Nomor telepon harus 10-13 digit!");
                 return;
             }
 
