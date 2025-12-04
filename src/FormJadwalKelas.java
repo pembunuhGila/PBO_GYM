@@ -26,7 +26,7 @@ public class FormJadwalKelas extends JFrame {
 
     private void connectDB() {
         try {
-            conn = DriverManager.getConnection("jdbc:postgresql://localhost/PBO_GYM", "postgres", "crazyMamad13*");
+            conn = DriverManager.getConnection("jdbc:postgresql://localhost:5432/pbo_gym", "postgres", "waely1234");
         } catch (Exception e) {
             JOptionPane.showMessageDialog(this, "Koneksi Gagal: " + e.getMessage());
         }
