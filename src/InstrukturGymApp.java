@@ -1,15 +1,15 @@
-import javax.swing.*;
-import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.*;
 import java.sql.*;
+import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
 
 public class InstrukturGymApp extends JFrame {
 
     // --- KONFIGURASI DATABASE POSTGRESQL ---
-    static final String DB_URL = "jdbc:postgresql://localhost:5432/pbo_gym";
+    static final String DB_URL = "jdbc:postgresql://localhost:5433/db_gym";
     static final String DB_USER = "postgres";
-    static final String DB_PASS = "waely1234";
+    static final String DB_PASS = "audyna11";
 
     // --- KOMPONEN GUI ---
     JTextField tNama = new JTextField();
@@ -116,7 +116,7 @@ public class InstrukturGymApp extends JFrame {
     }
 
     // --- LOAD DATA ---
-    private void loadData() {
+    public void loadData() {
         model.setRowCount(0);
         String sql = "SELECT * FROM instruktur_gym ORDER BY id_instruktur";
         try (Connection conn = connect(); Statement stmt = conn.createStatement(); ResultSet rs = stmt.executeQuery(sql)) {
@@ -174,10 +174,17 @@ public class InstrukturGymApp extends JFrame {
             JOptionPane.showMessageDialog(this, "Semua field harus diisi!");
             return false;
         }
+
+        // Batasi nomor telepon maksimal 13 digit
+        if (!tTelp.getText().matches("\\d{1,13}")) {
+            JOptionPane.showMessageDialog(this, "Nomor telepon harus angka dan maksimal 13 digit!");
+            return false;
+        }
+
         return true;
     }
 
-    private void resetForm() {
+    public void resetForm() {
         tNama.setText(""); tUsia.setText(""); tKeahlian.setText(""); tTelp.setText("");
         selectedId = "";
         tabel.clearSelection();
