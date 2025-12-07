@@ -1,8 +1,10 @@
-import javax.swing.*;
-import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.*;
 import java.sql.*;
+import java.time.LocalTime;
+import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
+
 
 public class FormJadwalKelas extends JFrame {
     private JTextField txtNamaKelas, txtJamKelas;
@@ -26,7 +28,7 @@ public class FormJadwalKelas extends JFrame {
 
     private void connectDB() {
         try {
-            conn = DriverManager.getConnection("jdbc:postgresql://localhost:5432/pbo_gym", "postgres", "waely1234");
+            conn = DriverManager.getConnection("jdbc:postgresql://localhost:5433/db_gym", "postgres", "audyna11");
         } catch (Exception e) {
             JOptionPane.showMessageDialog(this, "Koneksi Gagal: " + e.getMessage());
         }
@@ -87,7 +89,7 @@ public class FormJadwalKelas extends JFrame {
         });
     }
 
-    private void loadInstruktur() {
+    public void loadInstruktur() {
         try {
             cbInstruktur.removeAllItems();
             ResultSet rs = conn.createStatement().executeQuery("SELECT * FROM instruktur_gym");
@@ -99,7 +101,7 @@ public class FormJadwalKelas extends JFrame {
         }
     }
 
-    private void loadTable() {
+    public void loadTable() {
         try {
             model.setRowCount(0);
             String sql = "SELECT j.id_kelas, j.nama_kelas, j.hari, j.jam_kelas, i.nama FROM jadwal_kelas j JOIN instruktur_gym i ON j.id_instruktur=i.id_instruktur";
@@ -116,16 +118,24 @@ public class FormJadwalKelas extends JFrame {
 
     private void simpan() {
         try {
-            String instruktur = cbInstruktur.getSelectedItem().toString();
-            int idInstruktur = Integer.parseInt(instruktur.split(" - ")[0]);
+              if (!txtJamKelas.getText().matches("\\d{2}:\\d{2}:\\d{2}")) {
+            JOptionPane.showMessageDialog(this, "Format jam harus HH:MM:SS (contoh: 09:30:20)");
+            return;
+        }
 
-            String sql = "INSERT INTO jadwal_kelas (nama_kelas, hari, jam_kelas, id_instruktur) VALUES (?,?,?,?)";
-            PreparedStatement ps = conn.prepareStatement(sql);
-            ps.setString(1, txtNamaKelas.getText());
-            ps.setString(2, cbHari.getSelectedItem().toString());
-            ps.setString(3, txtJamKelas.getText());
-            ps.setInt(4, idInstruktur);
-            ps.executeUpdate();
+        String instruktur = cbInstruktur.getSelectedItem().toString();
+        int idInstruktur = Integer.parseInt(instruktur.split(" - ")[0]);
+
+        String sql = "INSERT INTO jadwal_kelas (nama_kelas, hari, jam_kelas, id_instruktur) VALUES (?,?,?,?)";
+        PreparedStatement ps = conn.prepareStatement(sql);
+        ps.setString(1, txtNamaKelas.getText());
+        ps.setString(2, cbHari.getSelectedItem().toString());
+
+        LocalTime time = LocalTime.parse(txtJamKelas.getText());
+        ps.setTime(3, Time.valueOf(time));
+
+        ps.setInt(4, idInstruktur);
+        ps.executeUpdate();
 
             JOptionPane.showMessageDialog(this, "Data berhasil disimpan!");
             loadTable(); reset();
@@ -135,28 +145,42 @@ public class FormJadwalKelas extends JFrame {
     }
 
     private void update() {
-        try {
-            int row = table.getSelectedRow();
-            int id = Integer.parseInt(model.getValueAt(row, 0).toString());
-
-            String instruktur = cbInstruktur.getSelectedItem().toString();
-            int idInstruktur = Integer.parseInt(instruktur.split(" - ")[0]);
-
-            String sql = "UPDATE jadwal_kelas SET nama_kelas=?, hari=?, jam_kelas=?, id_instruktur=? WHERE id_kelas=?";
-            PreparedStatement ps = conn.prepareStatement(sql);
-            ps.setString(1, txtNamaKelas.getText());
-            ps.setString(2, cbHari.getSelectedItem().toString());
-            ps.setString(3, txtJamKelas.getText());
-            ps.setInt(4, idInstruktur);
-            ps.setInt(5, id);
-            ps.executeUpdate();
-
-            JOptionPane.showMessageDialog(this, "Data berhasil diperbarui!");
-            loadTable(); reset();
-        } catch (Exception e) {
-            JOptionPane.showMessageDialog(this, "Gagal update: " + e.getMessage());
+    try {
+        int row = table.getSelectedRow();
+        if (row == -1) {
+            JOptionPane.showMessageDialog(this, "Pilih data yang akan diupdate!");
+            return;
         }
+
+        if (!txtJamKelas.getText().matches("\\d{2}:\\d{2}:\\d{2}")) {
+            JOptionPane.showMessageDialog(this, "Format jam harus HH:MM:SS (contoh: 09:30:20)");
+            return;
+        }
+
+        int id = Integer.parseInt(model.getValueAt(row, 0).toString());
+
+        String instruktur = cbInstruktur.getSelectedItem().toString();
+        int idInstruktur = Integer.parseInt(instruktur.split(" - ")[0]);
+
+        String sql = "UPDATE jadwal_kelas SET nama_kelas=?, hari=?, jam_kelas=?, id_instruktur=? WHERE id_kelas=?";
+        PreparedStatement ps = conn.prepareStatement(sql);
+        ps.setString(1, txtNamaKelas.getText());
+        ps.setString(2, cbHari.getSelectedItem().toString());
+
+        LocalTime time = LocalTime.parse(txtJamKelas.getText());
+        ps.setTime(3, Time.valueOf(time));
+
+        ps.setInt(4, idInstruktur);
+        ps.setInt(5, id);
+        ps.executeUpdate();
+
+        JOptionPane.showMessageDialog(this, "Data berhasil diperbarui!");
+        loadTable(); 
+        reset();
+    } catch (Exception e) {
+        JOptionPane.showMessageDialog(this, "Gagal update: " + e.getMessage());
     }
+}
 
     private void delete() {
         try {
@@ -175,7 +199,7 @@ public class FormJadwalKelas extends JFrame {
         }
     }
 
-    private void reset() {
+    public void reset() {
         txtNamaKelas.setText("");
         txtJamKelas.setText("");
         cbHari.setSelectedIndex(0);
