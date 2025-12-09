@@ -1,9 +1,9 @@
+import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.*;
 import java.sql.*;
 import java.time.LocalTime;
-import javax.swing.*;
-import javax.swing.table.DefaultTableModel;
 
 
 public class FormJadwalKelas extends JFrame {
@@ -28,7 +28,7 @@ public class FormJadwalKelas extends JFrame {
 
     private void connectDB() {
         try {
-            conn = DriverManager.getConnection("jdbc:postgresql://localhost:5433/db_gym", "postgres", "audyna11");
+            conn = DriverManager.getConnection("jdbc:postgresql://localhost:5432/pbo_gym", "postgres", "waely1234");
         } catch (Exception e) {
             JOptionPane.showMessageDialog(this, "Koneksi Gagal: " + e.getMessage());
         }
