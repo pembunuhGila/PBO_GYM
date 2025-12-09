@@ -55,18 +55,29 @@ public class From1_RegistrasiMemberGym extends JFrame {
         txtTelepon.setBounds(150, 140, 350, 25);
         add(txtTelepon);
 
-        // Batasi input nomor telepon
+
         txtTelepon.addKeyListener(new KeyAdapter() {
-            public void keyTyped(KeyEvent e) {
-                char c = e.getKeyChar();
-                if (!Character.isDigit(c)) {
-                    e.consume();
-                }
-                if (txtTelepon.getText().length() >= 13) {
-                    e.consume();
-                }
+        @Override
+        public void keyTyped(KeyEvent e) {
+            char c = e.getKeyChar();
+
+            // Hanya boleh angka
+            if (!Character.isDigit(c)) {
+                e.consume();
+                return;
             }
-        });
+
+            // Jika sudah mencapai 13 karakter, tampilkan pesan
+            if (txtTelepon.getText().length() >= 13) {
+                e.consume();
+                JOptionPane.showMessageDialog(
+                    From1_RegistrasiMemberGym.this,
+                    "Nomor telepon maksimal 13 karakter!"
+                );
+            }
+        }
+    });
+
 
         JLabel lblAlamat = new JLabel("Alamat:");
         lblAlamat.setBounds(20, 180, 120, 25);
