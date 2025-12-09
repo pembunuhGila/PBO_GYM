@@ -1,17 +1,15 @@
+import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.*;
 import java.sql.*;
-import javax.swing.*;
-import javax.swing.table.DefaultTableModel;
 
 public class InstrukturGymApp extends JFrame {
 
-    // --- KONFIGURASI DATABASE POSTGRESQL ---
-    static final String DB_URL = "jdbc:postgresql://localhost:5433/db_gym";
+    static final String DB_URL = "jdbc:postgresql://localhost:5432/pbo_gym";
     static final String DB_USER = "postgres";
-    static final String DB_PASS = "audyna11";
+    static final String DB_PASS = "waely1234";
 
-    // --- KOMPONEN GUI ---
     JTextField tNama = new JTextField();
     JTextField tUsia = new JTextField();
     JTextField tKeahlian = new JTextField();
@@ -27,7 +25,6 @@ public class InstrukturGymApp extends JFrame {
     );
     JTable tabel = new JTable(model);
 
-    // Variabel bantu untuk menyimpan ID yang sedang diedit
     String selectedId = "";
 
     public InstrukturGymApp() {
@@ -37,7 +34,6 @@ public class InstrukturGymApp extends JFrame {
         setLocationRelativeTo(null);
         setLayout(new BorderLayout());
 
-        // --- PANEL FORM (Input Data) ---
         JPanel pForm = new JPanel(new GridLayout(6, 2, 10, 10));
         pForm.setBorder(BorderFactory.createEmptyBorder(15, 15, 15, 15));
 
@@ -46,19 +42,36 @@ public class InstrukturGymApp extends JFrame {
         pForm.add(new JLabel("Keahlian:")); pForm.add(tKeahlian);
         pForm.add(new JLabel("No Telepon:")); pForm.add(tTelp);
 
-        // Panel Tombol
         JPanel pTombol = new JPanel(new FlowLayout(FlowLayout.CENTER));
         pTombol.add(bSimpan); pTombol.add(bUbah); pTombol.add(bHapus); pTombol.add(bReset);
 
-        pForm.add(new JLabel("")); // Spacer
+        pForm.add(new JLabel(""));
         pForm.add(pTombol);
 
         add(pForm, BorderLayout.NORTH);
-
-        // --- TABEL DATA ---
         add(new JScrollPane(tabel), BorderLayout.CENTER);
 
-        // --- EVENT LISTENER ---
+        // ✅ BATASI NO TELEPON REALTIME (TEMPAT YANG BENAR)
+        tTelp.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyTyped(KeyEvent e) {
+                char c = e.getKeyChar();
+
+                if (!Character.isDigit(c)) {
+                    e.consume();
+                    return;
+                }
+
+                if (tTelp.getText().length() >= 13) {
+                    e.consume();
+                    JOptionPane.showMessageDialog(
+                        InstrukturGymApp.this,
+                        "Nomor telepon maksimal 13 karakter!"
+                    );
+                }
+            }
+        });
+
         tabel.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
@@ -74,48 +87,41 @@ public class InstrukturGymApp extends JFrame {
             }
         });
 
-        // Tombol Simpan
         bSimpan.addActionListener(e -> {
             if (validasi()) {
                 jalankanSQL("INSERT INTO instruktur_gym(nama, usia, keahlian, nomor_telepon) VALUES (?,?,?,?)");
             }
         });
 
-        // Tombol Ubah
         bUbah.addActionListener(e -> {
             if (validasi()) {
                 jalankanSQL("UPDATE instruktur_gym SET nama=?, usia=?, keahlian=?, nomor_telepon=? WHERE id_instruktur=?");
             }
         });
 
-        // Tombol Hapus
         bHapus.addActionListener(e -> {
             if (!selectedId.isEmpty() && JOptionPane.showConfirmDialog(this, "Hapus data ini?", "Konfirmasi", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
                 hapusData();
             }
         });
 
-        // Tombol Reset
         bReset.addActionListener(e -> resetForm());
 
-        // Inisialisasi awal
         resetForm();
         loadData();
 
         setVisible(true);
     }
 
-    // --- KONEKSI DATABASE ---
     private Connection connect() throws SQLException {
         try {
             Class.forName("org.postgresql.Driver");
         } catch (ClassNotFoundException ex) {
-            System.out.println("Driver PostgreSQL tidak ditemukan! Cek Library.");
+            System.out.println("Driver PostgreSQL tidak ditemukan!");
         }
         return DriverManager.getConnection(DB_URL, DB_USER, DB_PASS);
     }
 
-    // --- LOAD DATA ---
     public void loadData() {
         model.setRowCount(0);
         String sql = "SELECT * FROM instruktur_gym ORDER BY id_instruktur";
@@ -134,7 +140,6 @@ public class InstrukturGymApp extends JFrame {
         }
     }
 
-    // --- EKSEKUSI SQL (INSERT & UPDATE) ---
     private void jalankanSQL(String sql) {
         try (Connection conn = connect(); PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, tNama.getText());
@@ -155,7 +160,6 @@ public class InstrukturGymApp extends JFrame {
         }
     }
 
-    // --- HAPUS DATA ---
     private void hapusData() {
         try (Connection conn = connect(); PreparedStatement ps = conn.prepareStatement("DELETE FROM instruktur_gym WHERE id_instruktur=?")) {
             ps.setInt(1, Integer.parseInt(selectedId));
@@ -168,24 +172,47 @@ public class InstrukturGymApp extends JFrame {
         }
     }
 
-    // --- VALIDASI & RESET ---
+    // private boolean validasi() {
+    //     if (tNama.getText().isEmpty() || tUsia.getText().isEmpty() || tKeahlian.getText().isEmpty() || tTelp.getText().isEmpty()) {
+    //         JOptionPane.showMessageDialog(this, "Semua field harus diisi!");
+    //         return false;
+    //     }
+    //     return true;
+    // }
+
     private boolean validasi() {
-        if (tNama.getText().isEmpty() || tUsia.getText().isEmpty() || tKeahlian.getText().isEmpty() || tTelp.getText().isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Semua field harus diisi!");
-            return false;
-        }
+    if (tNama.getText().isEmpty() || 
+        tUsia.getText().isEmpty() || 
+        tKeahlian.getText().isEmpty() || 
+        tTelp.getText().isEmpty()) {
 
-        // Batasi nomor telepon maksimal 13 digit
-        if (!tTelp.getText().matches("\\d{1,13}")) {
-            JOptionPane.showMessageDialog(this, "Nomor telepon harus angka dan maksimal 13 digit!");
-            return false;
-        }
-
-        return true;
+        JOptionPane.showMessageDialog(this, "Semua field harus diisi!");
+        return false;
     }
 
+    // VALIDASI USIA ANGKA POSITIF
+    try {
+        int usia = Integer.parseInt(tUsia.getText());
+
+        if (usia <= 0) {
+            JOptionPane.showMessageDialog(this, "Usia harus berupa angka positif!");
+            return false;
+        }
+
+    } catch (NumberFormatException e) {
+        JOptionPane.showMessageDialog(this, "Usia harus berupa angka!");
+        return false;
+    }
+
+    return true;
+}
+
+
     public void resetForm() {
-        tNama.setText(""); tUsia.setText(""); tKeahlian.setText(""); tTelp.setText("");
+        tNama.setText(""); 
+        tUsia.setText(""); 
+        tKeahlian.setText(""); 
+        tTelp.setText("");
         selectedId = "";
         tabel.clearSelection();
         tombolModeEdit(false);
@@ -197,7 +224,6 @@ public class InstrukturGymApp extends JFrame {
         bHapus.setEnabled(isEdit);
     }
 
-    // --- MAIN METHOD ---
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> new InstrukturGymApp());
     }
