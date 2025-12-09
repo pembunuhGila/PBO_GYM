@@ -22,11 +22,11 @@ public class MainGymApp extends JFrame {
         tabbedPane.addTab("Data Instruktur Gym", instrukturPanel.getContentPane());
 
         // Tab 3: Jadwal Kelas Gym
-        final FormJadwalKelas jadwalPanel = new FormJadwalKelas(); // ⚡ harus final
+        final FormJadwalKelas jadwalPanel = new FormJadwalKelas();
         tabbedPane.addTab("Daftar Kelas Gym", jadwalPanel.getContentPane());
 
         // Tab 4: Pendaftaran Kelas Gym
-        final FormPendaftaranKelas pendaftaranPanel = new FormPendaftaranKelas(); // ⚡ harus final
+        final FormPendaftaranKelas pendaftaranPanel = new FormPendaftaranKelas(); 
         tabbedPane.addTab("Pendaftaran Kelas Gym", pendaftaranPanel.getContentPane());
 
 
