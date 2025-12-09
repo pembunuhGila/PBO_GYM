@@ -11,9 +11,10 @@ public class FormPendaftaranKelas extends JFrame {
     private DefaultTableModel model;
     private Connection conn;
     
-    private static final String URL = "jdbc:postgresql://localhost:5433/db_gym";
+    // GANTI SESUAI SETTINGAN KALIAN
+    private static final String URL = "jdbc:postgresql://localhost:5432/pbo_gym";
     private static final String USER = "postgres";
-    private static final String PASSWORD = "audyna11";
+    private static final String PASSWORD = "waely1234";
 
     public FormPendaftaranKelas() {
         setTitle("Form Pendaftaran Kelas Gym");
@@ -105,12 +106,13 @@ public class FormPendaftaranKelas extends JFrame {
         });
         add(new JScrollPane(table), BorderLayout.CENTER);
         
+        // Event
         btnSimpan.addActionListener(e -> simpan());
         btnDelete.addActionListener(e -> delete());
         btnReset.addActionListener(e -> reset());
     }
 
-    private void loadComboBox() {
+    public void loadComboBox() {
         // Load Member
         try {
             cmbMember.removeAllItems();
@@ -130,7 +132,8 @@ public class FormPendaftaranKelas extends JFrame {
             cmbKelas.removeAllItems();
             cmbKelas.addItem("-- Pilih Kelas --");
             ResultSet rs = conn.createStatement().executeQuery(
-                "SELECT id_kelas, nama_kelas, hari, jam_kelas FROM jadwal_kelas ORDER BY nama_kelas"
+                "SELECT j.id_kelas, j.nama_kelas, j.hari, j.jam_kelas " +
+                "FROM jadwal_kelas j ORDER BY j.nama_kelas"
             );
             while (rs.next()) {
                 cmbKelas.addItem(rs.getInt(1) + " - " + rs.getString(2) + 
@@ -141,24 +144,20 @@ public class FormPendaftaranKelas extends JFrame {
         }
     }
 
-    private void loadTable() {
+    public void loadTable() {
         model.setRowCount(0);
         try {
-            String sql = 
-                "SELECT p.id_pendaftaran, m.nama, j.nama_kelas, p.tanggal_daftar, p.catatan " +
-                "FROM pendaftaran_kelas p " +
-                "JOIN member_gym m ON p.id_member = m.id_member " +
-                "JOIN jadwal_kelas j ON p.id_kelas = j.id_kelas " +
-                "ORDER BY p.id_pendaftaran DESC";
-            
+            String sql = "SELECT p.id_pendaftaran, m.nama, j.nama_kelas, " +
+                        "p.tanggal_daftar, p.catatan " +
+                        "FROM pendaftaran_kelas p " +
+                        "JOIN member_gym m ON p.id_member = m.id_member " +
+                        "JOIN jadwal_kelas j ON p.id_kelas = j.id_kelas " +
+                        "ORDER BY p.id_pendaftaran DESC";
             ResultSet rs = conn.createStatement().executeQuery(sql);
             while (rs.next()) {
                 model.addRow(new Object[]{
-                    rs.getInt(1),
-                    rs.getString(2),
-                    rs.getString(3),
-                    rs.getDate(4),
-                    rs.getString(5)
+                    rs.getInt(1), rs.getString(2), rs.getString(3),
+                    rs.getDate(4), rs.getString(5)
                 });
             }
         } catch (Exception e) {
@@ -167,38 +166,19 @@ public class FormPendaftaranKelas extends JFrame {
     }
 
     private void simpan() {
-
-        // VALIDASI MEMBER
         if (cmbMember.getSelectedIndex() == 0) {
             JOptionPane.showMessageDialog(this, "Pilih member!");
             return;
         }
-
-        // VALIDASI KELAS
         if (cmbKelas.getSelectedIndex() == 0) {
             JOptionPane.showMessageDialog(this, "Pilih kelas!");
-            return;
-        }
-
-        // VALIDASI TANGGAL
-        java.util.Date today = new java.util.Date();
-        java.util.Date selected = (java.util.Date) spinnerTanggal.getValue();
-
-        if (selected.before(today)) {
-            JOptionPane.showMessageDialog(this, "Tanggal tidak boleh sebelum hari ini!");
-            return;
-        }
-
-        // VALIDASI CATATAN (maksimal 100 karakter)
-        if (txtCatatan.getText().trim().length() > 100) {
-            JOptionPane.showMessageDialog(this, "Catatan maksimal 100 karakter!");
             return;
         }
         
         try {
             int idMember = Integer.parseInt(cmbMember.getSelectedItem().toString().split(" - ")[0]);
             int idKelas = Integer.parseInt(cmbKelas.getSelectedItem().toString().split(" - ")[0]);
-            java.sql.Date tanggal = new java.sql.Date(selected.getTime());
+            java.sql.Date tanggal = new java.sql.Date(((java.util.Date)spinnerTanggal.getValue()).getTime());
             
             String sql = "INSERT INTO pendaftaran_kelas(id_member, id_kelas, tanggal_daftar, catatan) VALUES(?,?,?,?)";
             PreparedStatement ps = conn.prepareStatement(sql);
@@ -224,7 +204,6 @@ public class FormPendaftaranKelas extends JFrame {
         }
         
         int id = (int) model.getValueAt(row, 0);
-        
         int confirm = JOptionPane.showConfirmDialog(this, "Hapus data ini?", 
             "Konfirmasi", JOptionPane.YES_NO_OPTION);
         
@@ -244,7 +223,7 @@ public class FormPendaftaranKelas extends JFrame {
         }
     }
 
-    private void reset() {
+    public void reset() {
         txtIdPendaftaran.setText("");
         cmbMember.setSelectedIndex(0);
         cmbKelas.setSelectedIndex(0);
