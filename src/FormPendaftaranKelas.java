@@ -118,7 +118,7 @@ public class FormPendaftaranKelas extends JFrame {
             cmbMember.removeAllItems();
             cmbMember.addItem("-- Pilih Member --");
             ResultSet rs = conn.createStatement().executeQuery(
-                "SELECT id_member, nama FROM member_gym ORDER BY nama"
+                "SELECT id_member, nama FROM member_gym ORDER BY id_member ASC"
             );
             while (rs.next()) {
                 cmbMember.addItem(rs.getInt(1) + " - " + rs.getString(2));
