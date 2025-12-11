@@ -12,9 +12,9 @@ public class FormPendaftaranKelas extends JFrame {
     private Connection conn;
     
     // GANTI SESUAI SETTINGAN KALIAN
-    private static final String URL = "jdbc:postgresql://localhost:5432/pbo_gym";
+    private static final String URL = "jdbc:postgresql://localhost:5433/db_gym";
     private static final String USER = "postgres";
-    private static final String PASSWORD = "waely1234";
+    private static final String PASSWORD = "audyna11";
 
     public FormPendaftaranKelas() {
         setTitle("Form Pendaftaran Kelas Gym");
@@ -152,7 +152,7 @@ public class FormPendaftaranKelas extends JFrame {
                         "FROM pendaftaran_kelas p " +
                         "JOIN member_gym m ON p.id_member = m.id_member " +
                         "JOIN jadwal_kelas j ON p.id_kelas = j.id_kelas " +
-                        "ORDER BY p.id_pendaftaran DESC";
+                        "ORDER BY p.id_pendaftaran ASC";
             ResultSet rs = conn.createStatement().executeQuery(sql);
             while (rs.next()) {
                 model.addRow(new Object[]{
