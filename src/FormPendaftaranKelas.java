@@ -133,7 +133,7 @@ public class FormPendaftaranKelas extends JFrame {
             cmbKelas.addItem("-- Pilih Kelas --");
             ResultSet rs = conn.createStatement().executeQuery(
                 "SELECT j.id_kelas, j.nama_kelas, j.hari, j.jam_kelas " +
-                "FROM jadwal_kelas j ORDER BY j.nama_kelas"
+                "FROM jadwal_kelas j ORDER BY j.id_kelas ASC"
             );
             while (rs.next()) {
                 cmbKelas.addItem(rs.getInt(1) + " - " + rs.getString(2) + 
