@@ -11,13 +11,14 @@ public class FormPendaftaranKelas extends JPanel {
     private DefaultTableModel model;
     private Connection conn;
     
-    // GANTI SESUAI SETTINGAN KALIAN
     private static final String URL = "jdbc:postgresql://localhost:5432/PBO_GYM";
     private static final String USER = "postgres";
     private static final String PASSWORD = "crazyMamad13*";
 
     public FormPendaftaranKelas() {
-        setSize(900, 550);
+        setLayout(new BorderLayout(10, 10));
+        setBorder(BorderFactory.createEmptyBorder(15, 15, 15, 15));
+        
         connectDB();
         initUI();
         loadComboBox();
@@ -28,84 +29,89 @@ public class FormPendaftaranKelas extends JPanel {
         try {
             Class.forName("org.postgresql.Driver");
             conn = DriverManager.getConnection(URL, USER, PASSWORD);
-            System.out.println("Koneksi berhasil!");
         } catch (Exception e) {
             JOptionPane.showMessageDialog(this, "Koneksi gagal: " + e.getMessage());
         }
     }
 
     private void initUI() {
-        JPanel pForm = new JPanel(new GridLayout(6, 2, 10, 10));
-        pForm.setBorder(BorderFactory.createEmptyBorder(15, 15, 15, 15));
-        
-        // ID Pendaftaran
-        pForm.add(new JLabel("ID Pendaftaran:"));
-        txtIdPendaftaran = new JTextField();
+        // PANEL INPUT
+        JPanel inputPanel = new JPanel(new GridBagLayout());
+        inputPanel.setBorder(BorderFactory.createTitledBorder("Form Pendaftaran Kelas"));
+        GridBagConstraints c = new GridBagConstraints();
+        c.insets = new Insets(5, 5, 5, 5);
+        c.fill = GridBagConstraints.HORIZONTAL;
+
+        // Inisialisasi komponen
+        txtIdPendaftaran = new JTextField(20);
         txtIdPendaftaran.setEditable(false);
         txtIdPendaftaran.setBackground(Color.LIGHT_GRAY);
-        pForm.add(txtIdPendaftaran);
         
-        // Member
-        pForm.add(new JLabel("Member:"));
         cmbMember = new JComboBox<>();
-        pForm.add(cmbMember);
-        
-        // Kelas
-        pForm.add(new JLabel("Kelas Gym:"));
         cmbKelas = new JComboBox<>();
-        pForm.add(cmbKelas);
         
-        // Tanggal
-        pForm.add(new JLabel("Tanggal Daftar:"));
         spinnerTanggal = new JSpinner(new SpinnerDateModel());
         JSpinner.DateEditor editor = new JSpinner.DateEditor(spinnerTanggal, "dd-MM-yyyy");
         spinnerTanggal.setEditor(editor);
-        pForm.add(spinnerTanggal);
         
-        // Catatan
-        pForm.add(new JLabel("Catatan:"));
-        txtCatatan = new JTextField();
-        pForm.add(txtCatatan);
-        
-        // Tombol
-        JPanel pBtn = new JPanel(new FlowLayout());
-        JButton btnSimpan = new JButton("Simpan");
-        JButton btnDelete = new JButton("Delete");
-        JButton btnReset = new JButton("Reset");
-        
-        btnSimpan.setBackground(new Color(46, 204, 113));
-        btnSimpan.setForeground(Color.WHITE);
-        btnDelete.setBackground(new Color(231, 76, 60));
-        btnDelete.setForeground(Color.WHITE);
-        btnReset.setBackground(new Color(52, 152, 219));
-        btnReset.setForeground(Color.WHITE);
-        
-        pBtn.add(btnSimpan);
-        pBtn.add(btnDelete);
-        pBtn.add(btnReset);
-        pForm.add(new JLabel());
-        pForm.add(pBtn);
-        
-        add(pForm, BorderLayout.NORTH);
-        
-        // Tabel
+        txtCatatan = new JTextField(20);
+
+        // Tambah field ke panel
+        addField(inputPanel, c, "ID Pendaftaran:", txtIdPendaftaran, 0);
+        addField(inputPanel, c, "Member:", cmbMember, 1);
+        addField(inputPanel, c, "Kelas Gym:", cmbKelas, 2);
+        addField(inputPanel, c, "Tanggal Daftar:", spinnerTanggal, 3);
+        addField(inputPanel, c, "Catatan:", txtCatatan, 4);
+
+        // PANEL TOMBOL
+        JPanel btnPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 10));
+        btnPanel.add(createButton("Simpan", new Color(46, 204, 113), e -> simpan()));
+        btnPanel.add(createButton("Delete", new Color(231, 76, 60), e -> delete()));
+        btnPanel.add(createButton("Reset", new Color(52, 152, 219), e -> reset()));
+
+        // PANEL TABEL
         model = new DefaultTableModel(
             new String[]{"ID", "Member", "Kelas", "Tanggal", "Catatan"}, 0
         ) {
             public boolean isCellEditable(int row, int col) { return false; }
         };
+        
         table = new JTable(model);
         table.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent e) {
                 loadToForm();
             }
         });
-        add(new JScrollPane(table), BorderLayout.CENTER);
-        
-        // Event
-        btnSimpan.addActionListener(e -> simpan());
-        btnDelete.addActionListener(e -> delete());
-        btnReset.addActionListener(e -> reset());
+
+        JPanel tablePanel = new JPanel(new BorderLayout());
+        tablePanel.setBorder(BorderFactory.createTitledBorder("Data Pendaftaran"));
+        tablePanel.add(new JScrollPane(table));
+
+        // GABUNGKAN PANEL
+        JPanel topPanel = new JPanel(new BorderLayout(5, 5));
+        topPanel.add(inputPanel, BorderLayout.CENTER);
+        topPanel.add(btnPanel, BorderLayout.SOUTH);
+
+        add(topPanel, BorderLayout.NORTH);
+        add(tablePanel, BorderLayout.CENTER);
+    }
+
+    // Helper: Tambah field ke panel
+    private void addField(JPanel panel, GridBagConstraints c, String label, JComponent field, int row) {
+        c.gridx = 0; c.gridy = row; c.weightx = 0;
+        panel.add(new JLabel(label), c);
+        c.gridx = 1; c.weightx = 1;
+        panel.add(field, c);
+    }
+
+    // Helper: Buat tombol dengan warna
+    private JButton createButton(String text, Color bgColor, java.awt.event.ActionListener action) {
+        JButton btn = new JButton(text);
+        btn.setPreferredSize(new Dimension(100, 30));
+        btn.setBackground(bgColor);
+        btn.setForeground(Color.WHITE);
+        btn.addActionListener(action);
+        return btn;
     }
 
     public void loadComboBox() {
@@ -257,9 +263,5 @@ public class FormPendaftaranKelas extends JPanel {
             Object catatan = model.getValueAt(row, 4);
             txtCatatan.setText(catatan != null ? catatan.toString() : "");
         }
-    }
-
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> new FormPendaftaranKelas());
     }
 }
