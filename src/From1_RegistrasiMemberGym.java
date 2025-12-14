@@ -3,7 +3,7 @@ import javax.swing.table.DefaultTableModel;
 import java.awt.event.*;
 import java.sql.*;
 
-public class From1_RegistrasiMemberGym extends JFrame {
+public class From1_RegistrasiMemberGym extends JPanel {
 
     Connection conn;
     PreparedStatement pst;
@@ -16,14 +16,9 @@ public class From1_RegistrasiMemberGym extends JFrame {
     DefaultTableModel model;
 
     public From1_RegistrasiMemberGym() {
-        setTitle("Form Registrasi Member Gym");
         setSize(750, 500);
         setLayout(null);
-        setLocationRelativeTo(null);
-        setDefaultCloseOperation(EXIT_ON_CLOSE);
-
         koneksiDatabase();
-
 
         // Labels & Inputs
         JLabel lblNama = new JLabel("Nama:");
@@ -124,9 +119,9 @@ public class From1_RegistrasiMemberGym extends JFrame {
     void koneksiDatabase() {
         try {
             conn = DriverManager.getConnection(
-                    "jdbc:postgresql://localhost:5432/pbo_gym",
+                    "jdbc:postgresql://localhost:5432/PBO_GYM",
                     "postgres",
-                    "waely1234"
+                    "crazyMamad13*"
             );
             System.out.println("Koneksi Database Berhasil!");
         } catch (Exception e) {

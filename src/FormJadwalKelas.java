@@ -6,7 +6,7 @@ import java.sql.*;
 import java.time.LocalTime;
 
 
-public class FormJadwalKelas extends JFrame {
+public class FormJadwalKelas extends JPanel {
     private JTextField txtNamaKelas, txtJamKelas;
     private JComboBox<String> cbHari, cbInstruktur;
     private JTable table;
@@ -15,11 +15,7 @@ public class FormJadwalKelas extends JFrame {
     private Connection conn;
 
     public FormJadwalKelas() {
-        setTitle("Form Jadwal Kelas Gym");
         setSize(700, 500);
-        setLocationRelativeTo(null);
-        setDefaultCloseOperation(EXIT_ON_CLOSE);
-
         connectDB();
         initUI();
         loadInstruktur();
@@ -28,7 +24,7 @@ public class FormJadwalKelas extends JFrame {
 
     private void connectDB() {
         try {
-            conn = DriverManager.getConnection("jdbc:postgresql://localhost:5432/pbo_gym", "postgres", "waely1234");
+            conn = DriverManager.getConnection("jdbc:postgresql://localhost:5432/PBO_GYM", "postgres", "crazyMamad13*");
         } catch (Exception e) {
             JOptionPane.showMessageDialog(this, "Koneksi Gagal: " + e.getMessage());
         }
@@ -205,8 +201,7 @@ public class FormJadwalKelas extends JFrame {
         cbHari.setSelectedIndex(0);
         if (cbInstruktur.getItemCount() > 0) cbInstruktur.setSelectedIndex(0);
     }
-
     public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> new FormJadwalKelas().setVisible(true));
+        SwingUtilities.invokeLater(() -> new FormJadwalKelas());
     }
 }

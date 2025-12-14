@@ -4,11 +4,10 @@ import java.awt.*;
 import java.awt.event.*;
 import java.sql.*;
 
-public class InstrukturGymApp extends JFrame {
-
-    static final String DB_URL = "jdbc:postgresql://localhost:5432/pbo_gym";
+public class InstrukturGymApp extends JPanel {
+    static final String DB_URL = "jdbc:postgresql://localhost:5432/PBO_GYM";
     static final String DB_USER = "postgres";
-    static final String DB_PASS = "waely1234";
+    static final String DB_PASS = "crazyMamad13*";
 
     JTextField tNama = new JTextField();
     JTextField tUsia = new JTextField();
@@ -28,10 +27,7 @@ public class InstrukturGymApp extends JFrame {
     String selectedId = "";
 
     public InstrukturGymApp() {
-        super("Aplikasi Instruktur Gym");
         setSize(750, 500);
-        setDefaultCloseOperation(EXIT_ON_CLOSE);
-        setLocationRelativeTo(null);
         setLayout(new BorderLayout());
 
         JPanel pForm = new JPanel(new GridLayout(6, 2, 10, 10));

@@ -3,7 +3,7 @@ import java.sql.*;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 
-public class FormPendaftaranKelas extends JFrame {
+public class FormPendaftaranKelas extends JPanel {
     private JTextField txtIdPendaftaran, txtCatatan;
     private JComboBox<String> cmbMember, cmbKelas;
     private JSpinner spinnerTanggal;
@@ -12,16 +12,12 @@ public class FormPendaftaranKelas extends JFrame {
     private Connection conn;
     
     // GANTI SESUAI SETTINGAN KALIAN
-    private static final String URL = "jdbc:postgresql://localhost:5433/db_gym";
+    private static final String URL = "jdbc:postgresql://localhost:5432/PBO_GYM";
     private static final String USER = "postgres";
-    private static final String PASSWORD = "audyna11";
+    private static final String PASSWORD = "crazyMamad13*";
 
     public FormPendaftaranKelas() {
-        setTitle("Form Pendaftaran Kelas Gym");
         setSize(900, 550);
-        setDefaultCloseOperation(EXIT_ON_CLOSE);
-        setLocationRelativeTo(null);
-        
         connectDB();
         initUI();
         loadComboBox();
@@ -264,6 +260,6 @@ public class FormPendaftaranKelas extends JFrame {
     }
 
     public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> new FormPendaftaranKelas().setVisible(true));
+        SwingUtilities.invokeLater(() -> new FormPendaftaranKelas());
     }
 }

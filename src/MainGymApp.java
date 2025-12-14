@@ -10,26 +10,25 @@ public class MainGymApp extends JFrame {
         setLocationRelativeTo(null);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
 
-        // Membuat JTabbedPane
         JTabbedPane tabbedPane = new JTabbedPane();
 
-        // Tab 1: Registrasi Member Gym
+        // TAB 1: Registrasi Member
         From1_RegistrasiMemberGym memberPanel = new From1_RegistrasiMemberGym();
-        tabbedPane.addTab("Daftar Member Gym", memberPanel.getContentPane());
+        tabbedPane.addTab("Daftar Member Gym", memberPanel);
 
-        // Tab 2: Data Instruktur Gym
+        // TAB 2: Instruktur
         InstrukturGymApp instrukturPanel = new InstrukturGymApp();
-        tabbedPane.addTab("Data Instruktur Gym", instrukturPanel.getContentPane());
+        tabbedPane.addTab("Data Instruktur Gym", instrukturPanel);
 
-        // Tab 3: Jadwal Kelas Gym
-        final FormJadwalKelas jadwalPanel = new FormJadwalKelas();
-        tabbedPane.addTab("Daftar Kelas Gym", jadwalPanel.getContentPane());
+        // TAB 3: Jadwal Kelas
+        FormJadwalKelas jadwalPanel = new FormJadwalKelas();
+        tabbedPane.addTab("Daftar Kelas Gym", jadwalPanel);
 
-        // Tab 4: Pendaftaran Kelas Gym
-        final FormPendaftaranKelas pendaftaranPanel = new FormPendaftaranKelas(); 
-        tabbedPane.addTab("Pendaftaran Kelas Gym", pendaftaranPanel.getContentPane());
+        // TAB 4: Pendaftaran Kelas
+        FormPendaftaranKelas pendaftaranPanel = new FormPendaftaranKelas();
+        tabbedPane.addTab("Pendaftaran Kelas Gym", pendaftaranPanel);
 
-
+        // EVENT SAAT PINDAH TAB
         tabbedPane.addChangeListener(new ChangeListener() {
             @Override
             public void stateChanged(ChangeEvent e) {
@@ -38,17 +37,16 @@ public class MainGymApp extends JFrame {
 
                 switch (title) {
                     case "Daftar Kelas Gym":
-                        jadwalPanel.loadInstruktur(); 
-                        jadwalPanel.loadTable();      
-                        jadwalPanel.reset();         
+                        jadwalPanel.loadInstruktur();
+                        jadwalPanel.loadTable();
+                        jadwalPanel.reset();
                         break;
 
                     case "Pendaftaran Kelas Gym":
                         pendaftaranPanel.loadComboBox();
-                        pendaftaranPanel.loadTable();    
-                        pendaftaranPanel.reset();      
+                        pendaftaranPanel.loadTable();
+                        pendaftaranPanel.reset();
                         break;
-
                 }
             }
         });
